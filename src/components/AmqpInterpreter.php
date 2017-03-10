@@ -1,20 +1,11 @@
 <?php
-/**
- * @link https://github.com/webtoucher/yii2-amqp
- * @copyright Copyright (c) 2014 webtoucher
- * @license https://github.com/webtoucher/yii2-amqp/blob/master/LICENSE.md
- */
 
-namespace webtoucher\amqp\components;
+namespace tolmachov\amqp\components;
 
 use yii\helpers\Console;
 
-
 /**
  * AMQP interpreter class.
- *
- * @author Alexey Kuznetsov <mirakuru@webtoucher.ru>
- * @since 2.0
  */
 class AmqpInterpreter
 {
@@ -27,7 +18,8 @@ class AmqpInterpreter
      * @param $message
      * @param $type
      */
-    public function log($message, $type = self::MESSAGE_INFO) {
+    public function log($message, $type = self::MESSAGE_INFO)
+    {
         $format = [$type == self::MESSAGE_ERROR ? Console::FG_RED : Console::FG_BLUE];
         Console::stdout(Console::ansiFormat($message . PHP_EOL, $format));
     }

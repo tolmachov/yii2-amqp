@@ -1,27 +1,17 @@
 <?php
-/**
- * @link https://github.com/webtoucher/yii2-amqp
- * @copyright Copyright (c) 2014 webtoucher
- * @license https://github.com/webtoucher/yii2-amqp/blob/master/LICENSE.md
- */
 
-namespace webtoucher\amqp\components;
+namespace tolmachov\amqp\components;
 
-use Yii;
 use PhpAmqpLib\Channel\AMQPChannel;
-use PhpAmqpLib\Connection\AMQPConnection;
-use webtoucher\amqp\components\Amqp;
-use webtoucher\commands\Controller;
-
+use PhpAmqpLib\Connection\AbstractConnection;
+use PhpAmqpLib\Message\AMQPMessage;
 
 /**
  * AMQP trait for controllers.
  *
  * @property Amqp $amqp AMQP object.
- * @property AMQPConnection $connection AMQP connection.
+ * @property AbstractConnection $connection AMQP connection.
  * @property AMQPChannel $channel AMQP channel.
- * @author Alexey Kuznetsov <mirakuru@webtoucher.ru>
- * @since 2.0
  */
 trait AmqpTrait
 {
@@ -47,13 +37,14 @@ trait AmqpTrait
         if (empty($this->amqpContainer)) {
             $this->amqpContainer = Yii::$app->amqp;
         }
+
         return $this->amqpContainer;
     }
 
     /**
      * Returns AMQP connection.
      *
-     * @return AMQPConnection
+     * @return AbstractConnection
      */
     public function getConnection()
     {
@@ -64,6 +55,7 @@ trait AmqpTrait
      * Returns AMQP channel.
      *
      * @param string $channel_id
+     *
      * @return AMQPChannel
      */
     public function getChannel($channel_id = null)
@@ -78,6 +70,7 @@ trait AmqpTrait
      * @param string|array|AMQPMessage $message
      * @param string $exchange
      * @param string $type
+     *
      * @return void
      */
     public function send($routing_key, $message, $exchange = null, $type = Amqp::TYPE_TOPIC)
@@ -92,6 +85,7 @@ trait AmqpTrait
      * @param string|array|AMQPMessage $message
      * @param integer $timeout Timeout in seconds.
      * @param string $exchange
+     *
      * @return string
      */
     public function ask($routing_key, $message, $timeout = 10, $exchange = null)

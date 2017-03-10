@@ -1,28 +1,20 @@
 <?php
-/**
- * @link https://github.com/webtoucher/yii2-amqp
- * @copyright Copyright (c) 2014 webtoucher
- * @license https://github.com/webtoucher/yii2-amqp/blob/master/LICENSE.md
- */
 
-namespace webtoucher\amqp\components;
+namespace tolmachov\amqp\components;
 
+use PhpAmqpLib\Channel\AMQPChannel;
+use PhpAmqpLib\Connection\AMQPSocketConnection;
+use PhpAmqpLib\Message\AMQPMessage;
 use yii\base\Component;
 use yii\base\Exception;
-use yii\helpers\Inflector;
 use yii\helpers\Json;
-use PhpAmqpLib\Channel\AMQPChannel;
-use PhpAmqpLib\Connection\AMQPConnection;
-use PhpAmqpLib\Message\AMQPMessage;
 
 
 /**
  * AMQP wrapper.
  *
- * @property AMQPConnection $connection AMQP connection.
+ * @property AMQPSocketConnection $connection AMQP connection.
  * @property AMQPChannel $channel AMQP channel.
- * @author Alexey Kuznetsov <mirakuru@webtoucher.ru>
- * @since 2.0
  */
 class Amqp extends Component
 {
@@ -32,7 +24,7 @@ class Amqp extends Component
     const TYPE_FANOUT = 'fanout';
 
     /**
-     * @var AMQPConnection
+     * @var AMQPSocketConnection
      */
     protected static $ampqConnection;
 
@@ -76,7 +68,7 @@ class Amqp extends Component
             throw new Exception("Parameter 'user' was not set for AMQP connection.");
         }
         if (empty(self::$ampqConnection)) {
-            self::$ampqConnection = new AMQPConnection(
+            self::$ampqConnection = new AMQPSocketConnection(
                 $this->host,
                 $this->port,
                 $this->user,
@@ -89,7 +81,7 @@ class Amqp extends Component
     /**
      * Returns AMQP connection.
      *
-     * @return AMQPConnection
+     * @return AMQPSocketConnection
      */
     public function getConnection()
     {
@@ -100,6 +92,7 @@ class Amqp extends Component
      * Returns AMQP connection.
      *
      * @param string $channel_id
+     *
      * @return AMQPChannel
      */
     public function getChannel($channel_id = null)
@@ -118,6 +111,7 @@ class Amqp extends Component
      * @param string $routing_key
      * @param string|array $message
      * @param string $type Use self::TYPE_DIRECT if it is an answer
+     *
      * @return void
      */
     public function send($exchange, $routing_key, $message, $type = self::TYPE_TOPIC)
@@ -136,6 +130,7 @@ class Amqp extends Component
      * @param string $routing_key
      * @param string|array $message
      * @param integer $timeout Timeout in seconds.
+     *
      * @return string
      */
     public function ask($exchange, $routing_key, $message, $timeout)
@@ -148,7 +143,7 @@ class Amqp extends Component
         $this->channel->queue_bind($queueName, $exchange, $queueName);
 
         $response = null;
-        $callback = function(AMQPMessage $answer) use ($message, &$response) {
+        $callback = function (AMQPMessage $answer) use ($message, &$response) {
             $response = $answer->body;
         };
 
@@ -158,6 +153,7 @@ class Amqp extends Component
             // exception will be thrown on timeout
             $this->channel->wait(null, false, $timeout);
         }
+
         return $response;
     }
 
@@ -191,7 +187,9 @@ class Amqp extends Component
      *
      * @param string|array|object $message
      * @param array $properties
+     *
      * @return AMQPMessage
+     *
      * @throws Exception If message is empty.
      */
     public function prepareMessage($message, $properties = null)
@@ -202,6 +200,7 @@ class Amqp extends Component
         if (is_array($message) || is_object($message)) {
             $message = Json::encode($message);
         }
+
         return new AMQPMessage($message, $properties);
     }
 }

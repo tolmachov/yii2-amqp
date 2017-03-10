@@ -1,27 +1,16 @@
 <?php
-/**
- * @link https://github.com/webtoucher/yii2-amqp
- * @copyright Copyright (c) 2014 webtoucher
- * @license https://github.com/webtoucher/yii2-amqp/blob/master/LICENSE.md
- */
 
-namespace webtoucher\amqp\controllers;
+namespace tolmachov\amqp\controllers;
 
+use PhpAmqpLib\Message\AMQPMessage;
+use tolmachov\amqp\components\Amqp;
+use tolmachov\amqp\components\AmqpInterpreter;
 use yii\console\Exception;
 use yii\helpers\Inflector;
 use yii\helpers\Json;
-use PhpAmqpLib\Message\AMQPMessage;
-use webtoucher\amqp\components\Amqp;
-use webtoucher\amqp\components\AmqpInterpreter;
-use webtoucher\amqp\components\AmpqInterpreterInterface;
-use webtoucher\commands\Controller;
-
 
 /**
  * AMQP listener controller.
- *
- * @author Alexey Kuznetsov <mirakuru@webtoucher.ru>
- * @since 2.0
  */
 class AmqpListenerController extends AmqpConsoleController
 {
@@ -32,6 +21,9 @@ class AmqpListenerController extends AmqpConsoleController
      */
     public $interpreters = [];
 
+    /**
+     * @inheritdoc
+     */
     public function actionRun($routingKey = '#', $type = Amqp::TYPE_TOPIC)
     {
         $this->amqp->listen($this->exchange, $routingKey, [$this, 'callback'], $type);

@@ -3,12 +3,11 @@
 namespace tolmachov\amqp\controllers;
 
 use tolmachov\amqp\components\AmqpTrait;
-use tolmachov\amqp\commands\Controller;
 
 /**
  * AMQP console controller.
  */
-abstract class AmqpConsoleController extends Controller
+abstract class AmqpConsoleAbstractController extends AbstractController
 {
     use AmqpTrait;
 

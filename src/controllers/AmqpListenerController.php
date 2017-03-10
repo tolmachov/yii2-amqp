@@ -12,7 +12,7 @@ use yii\helpers\Json;
 /**
  * AMQP listener controller.
  */
-class AmqpListenerController extends AmqpConsoleController
+class AmqpListenerController extends AmqpConsoleAbstractController
 {
     /**
      * Interpreter classes for AMQP messages. This class will be used if interpreter class not set for exchange.

@@ -1,11 +1,13 @@
 <?php
 
-namespace tolmachov\amqp\commands;
+namespace tolmachov\amqp\controllers;
+
+use \yii\console\Controller;
 
 /**
  * Console controller wrapper
  */
-abstract class Controller extends \yii\console\Controller
+abstract class AbstractController extends Controller
 {
     /**
      * @inheritdoc

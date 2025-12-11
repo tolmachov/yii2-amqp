@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace tolmachov\amqp\components;
+
+use Yii;
 
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AbstractConnection;
@@ -32,9 +36,9 @@ trait AmqpTrait
      *
      * @return Amqp
      */
-    public function getAmqp()
+    public function getAmqp(): Amqp
     {
-        if (empty($this->amqpContainer)) {
+        if ($this->amqpContainer === null) {
             $this->amqpContainer = Yii::$app->amqp;
         }
 
@@ -46,7 +50,7 @@ trait AmqpTrait
      *
      * @return AbstractConnection
      */
-    public function getConnection()
+    public function getConnection(): AbstractConnection
     {
         return $this->amqp->getConnection();
     }
@@ -54,11 +58,11 @@ trait AmqpTrait
     /**
      * Returns AMQP channel.
      *
-     * @param string $channel_id
+     * @param string|null $channel_id
      *
      * @return AMQPChannel
      */
-    public function getChannel($channel_id = null)
+    public function getChannel(?string $channel_id = null): AMQPChannel
     {
         return $this->amqp->getChannel($channel_id);
     }
@@ -67,29 +71,27 @@ trait AmqpTrait
      * Sends message to the exchange.
      *
      * @param string $routing_key
-     * @param string|array|AMQPMessage $message
-     * @param string $exchange
+     * @param string|array|object $message
+     * @param string|null $exchange
      * @param string $type
-     *
-     * @return void
      */
-    public function send($routing_key, $message, $exchange = null, $type = Amqp::TYPE_TOPIC)
+    public function send(string $routing_key, $message, ?string $exchange = null, string $type = Amqp::TYPE_TOPIC): void
     {
-        $this->amqp->send($exchange ?: $this->exchange, $routing_key, $message, $type);
+        $this->amqp->send($exchange ?? $this->exchange, $routing_key, $message, $type);
     }
 
     /**
      * Sends message to the exchange and waits for answer.
      *
      * @param string $routing_key
-     * @param string|array|AMQPMessage $message
-     * @param integer $timeout Timeout in seconds.
-     * @param string $exchange
+     * @param string|array|object $message
+     * @param int $timeout Timeout in seconds.
+     * @param string|null $exchange
      *
-     * @return string
+     * @return string|null
      */
-    public function ask($routing_key, $message, $timeout = 10, $exchange = null)
+    public function ask(string $routing_key, $message, int $timeout = 10, ?string $exchange = null): ?string
     {
-        return $this->amqp->ask($exchange ?: $this->exchange, $routing_key, $message, $timeout);
+        return $this->amqp->ask($exchange ?? $this->exchange, $routing_key, $message, $timeout);
     }
 }

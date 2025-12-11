@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace tolmachov\amqp\controllers;
 
 use PhpAmqpLib\Message\AMQPMessage;
@@ -24,12 +26,13 @@ class AmqpListenerController extends AmqpConsoleAbstractController
     /**
      * @inheritdoc
      */
-    public function actionRun($routingKey = '#', $type = Amqp::TYPE_TOPIC)
+    public function actionRun(string $routingKey = '#', string $type = Amqp::TYPE_TOPIC): int
     {
         $this->amqp->listen($this->exchange, $routingKey, [$this, 'callback'], $type);
+        return 0;
     }
 
-    public function callback(AMQPMessage $msg)
+    public function callback(AMQPMessage $msg): void
     {
         $routingKey = $msg->delivery_info['routing_key'];
         $method = 'read' . Inflector::camelize($routingKey);

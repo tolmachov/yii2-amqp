@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace tolmachov\amqp\controllers;
 
-use \yii\console\Controller;
+use yii\console\Controller;
 
 /**
  * Console controller wrapper
@@ -21,12 +23,12 @@ abstract class AbstractController extends Controller
      */
     public $y = false;
 
-    abstract public function actionRun();
+    abstract public function actionRun(): int;
 
     /**
      * @inheritdoc
      */
-    public function options($actionId)
+    public function options($actionId): array
     {
         return array_merge(
             parent::options($actionId),
@@ -37,7 +39,7 @@ abstract class AbstractController extends Controller
     /**
      * @inheritdoc
      */
-    public function confirm($message, $default = false)
+    public function confirm($message, $default = false): bool
     {
         if ($this->y) {
             return true;

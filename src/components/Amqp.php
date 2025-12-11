@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace tolmachov\amqp\components;
 
 use PhpAmqpLib\Channel\AMQPChannel;
@@ -61,13 +63,13 @@ class Amqp extends Component
     /**
      * @inheritdoc
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
-        if (empty($this->user)) {
+        if ($this->user === null || $this->user === '') {
             throw new Exception("Parameter 'user' was not set for AMQP connection.");
         }
-        if (empty(self::$ampqConnection)) {
+        if (self::$ampqConnection === null) {
             self::$ampqConnection = new AMQPSocketConnection(
                 $this->host,
                 $this->port,
@@ -83,21 +85,21 @@ class Amqp extends Component
      *
      * @return AMQPSocketConnection
      */
-    public function getConnection()
+    public function getConnection(): AMQPSocketConnection
     {
         return self::$ampqConnection;
     }
 
     /**
-     * Returns AMQP connection.
+     * Returns AMQP channel.
      *
-     * @param string $channel_id
+     * @param string|null $channel_id
      *
      * @return AMQPChannel
      */
-    public function getChannel($channel_id = null)
+    public function getChannel(?string $channel_id = null): AMQPChannel
     {
-        $index = $channel_id ?: 'default';
+        $index = $channel_id ?? 'default';
         if (!array_key_exists($index, $this->channels)) {
             $this->channels[$index] = $this->connection->channel($channel_id);
         }
@@ -109,15 +111,13 @@ class Amqp extends Component
      *
      * @param string $exchange
      * @param string $routing_key
-     * @param string|array $message
+     * @param string|array|object $message
      * @param string $type Use self::TYPE_DIRECT if it is an answer
-     *
-     * @return void
      */
-    public function send($exchange, $routing_key, $message, $type = self::TYPE_TOPIC)
+    public function send(string $exchange, string $routing_key, $message, string $type = self::TYPE_TOPIC): void
     {
         $message = $this->prepareMessage($message);
-        if ($type == self::TYPE_TOPIC) {
+        if ($type === self::TYPE_TOPIC) {
             $this->channel->exchange_declare($exchange, $type, false, true, false);
         }
         $this->channel->basic_publish($message, $exchange, $routing_key);
@@ -128,14 +128,14 @@ class Amqp extends Component
      *
      * @param string $exchange
      * @param string $routing_key
-     * @param string|array $message
-     * @param integer $timeout Timeout in seconds.
+     * @param string|array|object $message
+     * @param int $timeout Timeout in seconds.
      *
-     * @return string
+     * @return string|null
      */
-    public function ask($exchange, $routing_key, $message, $timeout)
+    public function ask(string $exchange, string $routing_key, $message, int $timeout): ?string
     {
-        list ($queueName) = $this->channel->queue_declare('', false, false, true, false);
+        [$queueName] = $this->channel->queue_declare('', false, false, true, false);
         $message = $this->prepareMessage($message, [
             'reply_to' => $queueName,
         ]);
@@ -165,10 +165,10 @@ class Amqp extends Component
      * @param callable $callback
      * @param string $type
      */
-    public function listen($exchange, $routing_key, $callback, $type = self::TYPE_TOPIC)
+    public function listen(string $exchange, string $routing_key, callable $callback, string $type = self::TYPE_TOPIC): void
     {
-        list ($queueName) = $this->channel->queue_declare();
-        if ($type == Amqp::TYPE_DIRECT) {
+        [$queueName] = $this->channel->queue_declare();
+        if ($type === self::TYPE_DIRECT) {
             $this->channel->exchange_declare($exchange, $type, false, true, false);
         }
         $this->channel->queue_bind($queueName, $exchange, $routing_key);
@@ -183,24 +183,24 @@ class Amqp extends Component
     }
 
     /**
-     * Returns prepaired AMQP message.
+     * Returns prepared AMQP message.
      *
      * @param string|array|object $message
-     * @param array $properties
+     * @param array|null $properties
      *
      * @return AMQPMessage
      *
      * @throws Exception If message is empty.
      */
-    public function prepareMessage($message, $properties = null)
+    public function prepareMessage($message, ?array $properties = null): AMQPMessage
     {
-        if (empty($message)) {
+        if ($message === '' || $message === [] || $message === null) {
             throw new Exception('AMQP message can not be empty');
         }
         if (is_array($message) || is_object($message)) {
             $message = Json::encode($message);
         }
 
-        return new AMQPMessage($message, $properties);
+        return new AMQPMessage($message, $properties ?? []);
     }
 }

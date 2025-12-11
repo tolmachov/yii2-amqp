@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace tolmachov\amqp\controllers;
 
 use tolmachov\amqp\components\AmqpTrait;
@@ -14,7 +16,7 @@ abstract class AmqpConsoleAbstractController extends AbstractController
     /**
      * @inheritdoc
      */
-    public function options($actionId)
+    public function options($actionId): array
     {
         return array_merge(
             parent::options($actionId),

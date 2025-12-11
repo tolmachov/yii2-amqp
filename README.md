@@ -29,7 +29,7 @@ return [
     'components' => [
         ...
         'amqp' => [
-            'class' => 'webtoucher\amqp\components\Amqp',
+            'class' => 'tolmachov\amqp\components\Amqp',
             'host' => '127.0.0.1',
             'port' => 5672,
             'user' => 'your_login',
@@ -42,7 +42,7 @@ return [
     'controllerMap' => [
         ...
         'rabbit' => [
-            'class' => 'webtoucher\amqp\controllers\AmqpListenerController',
+            'class' => 'tolmachov\amqp\controllers\AmqpListenerController',
             'interpreters' => [
                 'my-exchange' => 'app\components\RabbitInterpreter', // interpreters for each exchange
             ],
@@ -61,7 +61,7 @@ Add messages interpreter class `@app/components/RabbitInterpreter` with your han
 
 namespace app\components;
 
-use webtoucher\amqp\components\AmqpInterpreter;
+use tolmachov\amqp\components\AmqpInterpreter;
 
 
 class RabbitInterpreter extends AmqpInterpreter
@@ -103,7 +103,6 @@ $ php yii rabbit my_routing_key direct --exchange=my_exchange
 
 to listen direct messages on selected exchange.
 
-Also you can create controllers for your needs. Just use for your web controllers class
-`webtoucher\amqp\controllers\AmqpConsoleController` instead of `yii\web\Controller` and for your console controllers
-class `webtoucher\amqp\controllers\AmqpConsoleController` instead of `yii\console\Controller`. AMQP connection will be
+Also you can create controllers for your needs. Just use for your console controllers
+class `tolmachov\amqp\controllers\AmqpConsoleAbstractController` instead of `yii\console\Controller`. AMQP connection will be
 available with property `connection`. AMQP channel will be available with property `channel`.

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace tolmachov\amqp\components;
 
 use yii\helpers\Console;
@@ -15,12 +17,12 @@ class AmqpInterpreter
     /**
      * Logs info and error messages.
      *
-     * @param $message
-     * @param $type
+     * @param string $message
+     * @param int $type
      */
-    public function log($message, $type = self::MESSAGE_INFO)
+    public function log(string $message, int $type = self::MESSAGE_INFO): void
     {
-        $format = [$type == self::MESSAGE_ERROR ? Console::FG_RED : Console::FG_BLUE];
+        $format = [$type === self::MESSAGE_ERROR ? Console::FG_RED : Console::FG_BLUE];
         Console::stdout(Console::ansiFormat($message . PHP_EOL, $format));
     }
 }
